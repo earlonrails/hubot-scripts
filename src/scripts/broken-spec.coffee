@@ -54,18 +54,6 @@ sendNaughtyEmail = (badBoy, msg) ->
   worker = findWorkerByProject(badBoy.badCommit.project, emailWorkers)
   emailWorkers.splice(worker[1], 1)
 
-module.exports = (robot) ->
-
-  robot.router.get "/hubot/broken-spec", (req, res) ->
-    query = querystring.parse(req._parsedUrl.query)
-    naughtyUser =
-      id: query.user
-      type: "chat"
-      badCommit:
-          fixLeeway: (new Date).getTime() + LEEWAY
-          project: query.project
-          branch: query.branch
-          tag: query.tag
 
     scolding = """You have broken spec tests on: #{query.project}:#{query.branch}
                   This was a bad commit: #{query.tag}
@@ -82,6 +70,26 @@ module.exports = (robot) ->
     emailTimeout = delay LEEWAY, -> sendNaughtyEmail(naughtyUser, teamEmail)
     emailWorkers.push { user: naughtyUser, message: teamEmail, timeout: emailTimeout }
     robot.send  naughtyUser, scolding
+
+module.exports = (robot) ->
+  robot.router.post "/hubot/broken-spec", (req, res) ->
+    rspec_content = req.body.rspec_content
+    user = req.body.user
+    project = req.body.project
+    branch = req.body.branch
+    tag = req.body.tag
+
+  robot.router.get "/hubot/broken-spec", (req, res) ->
+    query = querystring.parse(req._parsedUrl.query)
+    naughtyUser =
+      id: query.user
+      type: "chat"
+      badCommit:
+          fixLeeway: (new Date).getTime() + LEEWAY
+          project: query.project
+          branch: query.branch
+          tag: query.tag
+
     res.end "Don't be naughty!"
 
 
