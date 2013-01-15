@@ -31,3 +31,10 @@ module.exports = (robot) ->
   robot.respond /email (.*) -s (.*) -m (.*)/i, (msg) ->
     sendEmail msg.match[1], msg.match[2], msg.match[3], msg.message.user.id
     msg.send "email sent"
+
+  robot.router.post "/hubot/email", (req, res) ->
+    email   = req.body.email
+    subject = req.body.subject
+    message = req.body.message
+    from    = req.body.from
+    sendEmail email, subject, message, from
