@@ -25,3 +25,13 @@ module.exports = (robot) ->
     type: "chat"
 
    robot.send new_user, msg.match[2]
+
+   robot.router.post "/hubot/im", (req, res) ->
+      message  = req.body.message
+      new_user =
+        id: req.body.user
+        name: req.body.user
+        user: req.body.user
+        type: "chat"
+
+    robot.send new_user, message
